@@ -56,8 +56,8 @@
 - Resistenza fisica e psicologica, orientamento e sopravvivenza di base
 
 ## Formazioni utili
-- PHTLS / ITLS
-- ALS / PALS
+- PHTLS (Pre-hospital Trauma Life Support) / ITLS (International Trauma Life Support)
+- ALS / PALS (Advanced Life Support and Pediatric Advanced Life Support)
 - Wilderness First Responder
 - Medicina tropicale
 - Corsi MSF / Croce Rossa per operatori umanitari
