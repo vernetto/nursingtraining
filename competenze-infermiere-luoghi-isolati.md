@@ -1,4 +1,4 @@
-# Competenze dell'infermiere in luoghi lontani dalla civiltà
+# Competenze dell'infermiere in luoghi lontani dalla cosiddetta civiltà
 
 ## Emergenza e trauma
 - Valutazione primaria ABCDE e triage multiplo (START/SIEVE)
