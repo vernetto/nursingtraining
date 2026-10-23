@@ -1,0 +1,404 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Quiz Biologia Cellulare</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: colonna unica da studio; scheda domanda al centro, filtri sopra, riepilogo sotto. Palette ispirata alla colorazione ematossilina-eosina. */
+:root{
+  --bg:#f6f4f8; --surface:#ffffff; --ink:#221d2b; --muted:#6a6375; --line:#e2dce9;
+  --hema:#4b3a8f; --hema-soft:#ece8f7; --eosin:#c2416b; --eosin-soft:#fbe9ef;
+  --ok:#1f7a4d; --ok-soft:#e3f4ea; --bad:#b3261e; --bad-soft:#fbe7e5;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#16131c; --surface:#201c28; --ink:#ece8f2; --muted:#a59db2; --line:#352f40;
+  --hema:#a99af0; --hema-soft:#2b2540; --eosin:#f07fa3; --eosin-soft:#3a2230;
+  --ok:#5fd398; --ok-soft:#173327; --bad:#ff8a80; --bad-soft:#3b1d1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16131c; --surface:#201c28; --ink:#ece8f2; --muted:#a59db2; --line:#352f40;
+  --hema:#a99af0; --hema-soft:#2b2540; --eosin:#f07fa3; --eosin-soft:#3a2230;
+  --ok:#5fd398; --ok-soft:#173327; --bad:#ff8a80; --bad-soft:#3b1d1b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+header h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+header h1 span{color:var(--eosin)}
+header p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.note{background:var(--hema-soft);border-radius:10px;padding:12px 14px;font-size:.92rem}
+.note b{color:var(--hema)}
+.label{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.filters{display:flex;flex-direction:column;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.86rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--hema);border-color:var(--hema);color:var(--surface)}
+.chip.star::before{content:"★ ";color:var(--eosin)}
+.chip[aria-pressed="true"].star::before{color:var(--surface)}
+.chip:focus-visible,.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--eosin);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;background:var(--hema);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--hema);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+.progress{display:flex;flex-direction:column;gap:6px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--eosin);width:0;transition:width .25s}
+.stats{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.stats b{color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:5px;background:var(--hema-soft);color:var(--hema)}
+.tag.star{background:var(--eosin-soft);color:var(--eosin)}
+.q{font-family:var(--display);font-weight:600;font-size:1.25rem;line-height:1.3;margin:0;text-wrap:balance}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt .k{font-family:var(--mono);font-size:.8rem;min-width:1.4em;height:1.4em;display:inline-grid;place-items:center;border-radius:4px;background:var(--line);color:var(--muted);flex:none;margin-top:2px}
+.opt:hover:not(:disabled){border-color:var(--hema)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .k{background:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);color:var(--surface)}
+.expl{border-left:3px solid var(--ok);padding:4px 0 4px 14px}
+.expl.bad{border-color:var(--bad)}
+.expl strong{display:block;margin-bottom:4px}
+.expl p{margin:0;max-width:65ch}
+.done{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.big{font-family:var(--display);font-weight:800;font-size:3rem;color:var(--eosin);font-variant-numeric:tabular-nums;line-height:1}
+footer{font-size:.82rem;color:var(--muted)}
+kbd{font-family:var(--mono);font-size:.78rem;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Biologia cellulare <span>· 200 domande</span></h1>
+    <p>Lezione del 23 ottobre 2026: cellula procariotica ed eucariotica, organelli, membrana e trasporti. Ogni risposta ha la spiegazione.</p>
+  </header>
+
+  <div class="note"><b>Attenzione ai trabocchetti d'esame.</b> I mitocondri <b>hanno</b> membrana: due, esterna e interna. L'organello <b>senza</b> membrana sono i <b>ribosomi</b>. Le cellule vegetali hanno <b>sia</b> mitocondri <b>sia</b> cloroplasti.</div>
+
+  <section class="filters" aria-label="Filtri">
+    <span class="label">Argomenti</span>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <button class="chip" id="order" aria-pressed="true" type="button">Ordine casuale</button>
+      <button class="btn ghost" id="restart" type="button">Ricomincia</button>
+      <button class="btn ghost" id="retry" type="button">Ripassa solo gli errori</button>
+    </div>
+  </section>
+
+  <section class="progress" aria-label="Avanzamento">
+    <div class="bar"><i id="bar"></i></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <main class="card" id="card" aria-live="polite"></main>
+
+  <footer>Tasti: <kbd>1</kbd>–<kbd>4</kbd> per rispondere, <kbd>Invio</kbd> per andare avanti. I progressi restano salvati in questo browser.</footer>
+</div>
+
+<script>
+// Formato: [tema, domanda, [risposta corretta, sbagliata, sbagliata, sbagliata], spiegazione]. Le opzioni vengono mescolate a runtime.
+const TOPICS={
+  O:{name:"Organelli e membrane",star:true},
+  PE:{name:"Procarioti vs eucarioti",star:true},
+  V:{name:"Cellula vegetale",star:true},
+  D:{name:"Viventi e domini"},
+  B:{name:"Batteri e microbiota"},
+  M:{name:"Microscopia"},
+  MB:{name:"Membrana cellulare"},
+  T:{name:"Trasporto di membrana"},
+  P:{name:"Patologie"}
+};
+const Q=[
+// ===== ORGANELLI E MEMBRANE =====
+["O","Quale di queste strutture NON è delimitata da membrana?",["I ribosomi","I mitocondri","I lisosomi","L'apparato di Golgi"],"I ribosomi sono complessi di RNA ribosomiale e proteine, senza alcuna membrana. A lezione è stato indicato come possibile domanda d'esame. I mitocondri invece hanno addirittura due membrane; lisosomi e Golgi ne hanno una."],
+["O","Quante membrane possiede un mitocondrio?",["Due: una esterna e una interna","Nessuna","Una sola","Tre"],"Il mitocondrio ha una membrana esterna liscia e una membrana interna ripiegata in creste. Ognuna delle due è un doppio strato fosfolipidico."],
+["O","L'affermazione «i mitocondri sono privi di membrana» è:",["Falsa: hanno due membrane","Vera","Vera solo nelle cellule vegetali","Vera solo per la membrana interna"],"È un trabocchetto classico. Gli organelli privi di membrana sono i ribosomi (e i centrioli), non i mitocondri. Il mitocondrio ne ha due ed è proprio questa doppia membrana a far pensare a un'origine batterica."],
+["O","Quale coppia contiene SOLO strutture prive di membrana?",["Ribosomi e centrioli","Ribosomi e mitocondri","Mitocondri e cloroplasti","Lisosomi e ribosomi"],"Ribosomi e centrioli sono strutture fatte di macromolecole (RNA e proteine, o microtubuli) senza membrana. Mitocondri e cloroplasti hanno due membrane; i lisosomi ne hanno una."],
+["O","Quale affermazione sui ribosomi è FALSA?",["Sono racchiusi da una doppia membrana come i mitocondri","Traducono l'RNA messaggero in proteine","Possono essere liberi nel citoplasma","Possono essere attaccati al reticolo endoplasmatico rugoso"],"I ribosomi non hanno membrana. Fanno sintesi proteica e possono stare liberi nel citosol o legati alla membrana del RER, che appare «rugoso» proprio per la loro presenza."],
+["O","Come si chiamano i ripiegamenti della membrana mitocondriale interna?",["Creste","Tilacoidi","Cisterne","Microvilli"],"Le creste aumentano la superficie della membrana interna, dove si trovano la catena respiratoria e l'ATP sintasi. I tilacoidi sono nei cloroplasti, le cisterne nel Golgi e nel RE, i microvilli sulla superficie di cellule come gli enterociti."],
+["O","Quanti foglietti (monostrati) fosfolipidici si attraversano in totale passando dal citosol alla matrice mitocondriale?",["Quattro","Due","Uno","Nessuno"],"Due membrane, ognuna fatta da un doppio strato (due foglietti): 2 × 2 = 4 foglietti. A lezione si è insistito proprio sulla differenza tra «strati» e «membrane»."],
+["O","Il reticolo endoplasmatico è delimitato da:",["Una sola membrana (un doppio strato fosfolipidico)","Due membrane come il mitocondrio","Nessuna membrana","Una parete di peptidoglicano"],"RE, Golgi, lisosomi e perossisomi sono organelli a membrana singola. La doppia membrana distingue mitocondri e cloroplasti (e l'involucro nucleare)."],
+["O","L'apparato di Golgi è circondato da:",["Una membrana singola","Due membrane","Nessuna membrana","Una parete rigida"],"Il Golgi è formato da cisterne delimitate da una singola membrana. Riceve proteine dal RER, le fa maturare e le smista dentro o fuori dalla cellula."],
+["O","I lisosomi sono:",["Organelli a membrana singola con interno acido","Strutture prive di membrana","Organelli a doppia membrana con DNA proprio","Ammassi di ribosomi"],"Il lisosoma ha una membrana singola che mantiene all'interno un pH intorno a 5, necessario agli enzimi digestivi. Senza membrana l'acido si diffonderebbe in tutta la cellula."],
+["O","Quali organelli, secondo la teoria endosimbiotica, derivano da batteri inglobati?",["Mitocondri e cloroplasti","Reticolo endoplasmatico e Golgi","Lisosomi e perossisomi","Ribosomi e centrioli"],"Mitocondri e cloroplasti hanno doppia membrana, DNA proprio, ribosomi di tipo batterico e si replicano autonomamente: sono le tracce di un antico batterio fagocitato e non digerito."],
+["O","Quale indizio fa pensare che i mitocondri derivino da un batterio?",["Hanno doppia membrana e un proprio DNA","Non hanno membrana","Contengono cellulosa","Si trovano solo nelle cellule vegetali"],"L'ipotesi: una cellula ha fagocitato un batterio senza distruggerlo. La membrana esterna corrisponderebbe a quella del fagosoma, l'interna a quella del batterio. In più il mitocondrio ha un genoma proprio e si divide da sé."],
+["O","Secondo l'ipotesi endosimbiotica presentata a lezione, la membrana esterna del mitocondrio corrisponde:",["Alla membrana del fagosoma della cellula ospite","Alla parete di peptidoglicano","Al nucleo del batterio","Alla membrana del lisosoma che lo ha digerito"],"La cellula ospite ha introflesso la propria membrana per inglobare il batterio, formando un fagosoma. Il batterio non è stato digerito; quella membrana di origine ospite è diventata la membrana esterna."],
+["O","I mitocondri si replicano:",["In modo autonomo, dividendosi","Solo quando la cellula fa meiosi","Mai: vengono prodotti dal Golgi","Solo nelle cellule batteriche"],"I mitocondri hanno un proprio DNA e si dividono in modo autonomo, come facevano i batteri da cui derivano."],
+["O","Qual è la funzione principale dei mitocondri?",["Produrre energia sotto forma di ATP","Sintetizzare proteine","Degradare materiale cellulare","Fare la fotosintesi"],"Nei mitocondri si completano la respirazione cellulare e il ciclo di Krebs; l'ATP sintasi sulla membrana interna produce ATP. La sintesi proteica spetta ai ribosomi, la degradazione ai lisosomi."],
+["O","Perché la doppia membrana è indispensabile al funzionamento del mitocondrio?",["Permette un gradiente di protoni che l'ATP sintasi usa per produrre ATP","Impedisce al DNA mitocondriale di uscire nel nucleo","Rende il mitocondrio rigido come una parete","Serve a renderlo visibile al microscopio ottico"],"La catena respiratoria pompa H⁺ nello spazio tra le due membrane. Il ritorno degli H⁺ nella matrice attraverso l'ATP sintasi produce ATP. Senza membrane separate non ci sarebbe differenza di carica né ATP."],
+["O","Dove vengono pompati i protoni durante la respirazione cellulare?",["Nello spazio intermembrana del mitocondrio","Nel nucleo","Nel lisosoma","Nel lume del reticolo endoplasmatico"],"Gli H⁺ vengono spinti tra membrana interna ed esterna e rientrano nella matrice passando dall'ATP sintasi."],
+["O","Il reticolo endoplasmatico rugoso è «rugoso» perché:",["Ha ribosomi attaccati alla membrana","Ha una doppia membrana","Contiene cristalli di colesterolo","È avvolto dal citoscheletro"],"I numerosi ribosomi legati alla sua superficie lo fanno apparire puntinato al microscopio elettronico. Per questo il RER è specializzato nella sintesi proteica."],
+["O","Il reticolo endoplasmatico liscio si occupa soprattutto di:",["Sintesi di lipidi e colesterolo","Sintesi proteica","Produzione di ATP","Fotosintesi"],"Il REL non ha ribosomi attaccati e sintetizza lipidi. La sintesi proteica è del RER."],
+["O","L'apparato di Golgi serve a:",["Maturare e smistare le proteine verso l'interno o l'esterno della cellula","Produrre ATP","Contenere il DNA","Tradurre l'RNA"],"Le proteine sintetizzate nel RER passano al Golgi, che le modifica e le indirizza alla destinazione giusta, compresa la secrezione."],
+["O","Il reticolo endoplasmatico è in continuità con:",["L'involucro nucleare","La membrana mitocondriale esterna","La parete cellulare","I ribosomi liberi"],"Il RE parte dall'involucro del nucleo e si estende nel citoplasma. È uno dei motivi per cui si parla di sistema di endomembrane."],
+["O","Quale funzione hanno i centrioli?",["Partecipano alla divisione cellulare e alla segregazione dei cromosomi","Producono ATP","Sintetizzano lipidi","Degradano batteri"],"I centrioli fanno da perno per il fuso che separa i cromosomi durante la divisione. Non sono delimitati da membrana."],
+["O","Che cosa contiene il nucleo?",["Il materiale genetico (DNA)","I ribosomi liberi","Gli enzimi lisosomiali","La clorofilla"],"Il nucleo racchiude il DNA ed è delimitato da membrana (l'involucro nucleare). Al suo interno i nucleoli producono l'RNA ribosomiale."],
+["O","Perché il nucleo è una struttura chiusa?",["Perché il DNA deve restare confinato e protetto","Perché deve essere acido come un lisosoma","Perché produce ATP","Perché contiene clorofilla"],"È un esempio di rapporto struttura-funzione citato a lezione: il DNA «non deve andare in giro» e la membrana lo tiene nel suo compartimento."],
+["O","A che cosa serve il citoscheletro?",["Dare forma e sostegno alla cellula e permettere interazioni con l'esterno","Produrre proteine","Contenere il DNA","Acidificare i lisosomi"],"Il citoscheletro è una rete di filamenti proteici che dà forma, permette movimenti interni e collega la cellula ad altre cellule o all'ambiente."],
+["O","Quale organello ha bisogno di un pH acido, intorno a 5?",["Il lisosoma","Il mitocondrio","Il nucleo","Il ribosoma"],"Gli enzimi lisosomiali (nucleasi, proteasi, lipasi) funzionano solo in ambiente acido. Il citosol invece sta intorno a 7–7,2."],
+["O","Le cellule eucariotiche dell'uomo possiedono mitocondri?",["Sì, quasi tutte (fanno eccezione ad esempio i globuli rossi maturi)","No, solo le cellule vegetali","No, solo i batteri","Solo i neuroni"],"Quasi tutte le nostre cellule hanno mitocondri, spesso in grande numero. Un'eccezione nota sono i globuli rossi maturi dei mammiferi, che li perdono durante la maturazione."],
+["O","Quale tra questi organelli possiede un proprio DNA?",["Il mitocondrio","Il Golgi","Il lisosoma","Il reticolo endoplasmatico liscio"],"Mitocondri (e cloroplasti) conservano un piccolo genoma circolare, eredità della loro origine batterica."],
+["O","Quale struttura si trova sia nelle cellule procariotiche sia in quelle eucariotiche?",["I ribosomi","I mitocondri","Il Golgi","Il nucleo"],"Tutte le cellule hanno ribosomi, perché tutte devono produrre proteine. Cambia la dimensione: 70S nei batteri, 80S negli eucarioti."],
+["O","Le creste mitocondriali fanno parte di:",["La membrana interna","La membrana esterna","La matrice","Lo spazio intermembrana"],"La membrana interna si ripiega in creste; la membrana esterna è liscia."],
+["O","In un'immagine al TEM, quali organelli si riconoscono per le creste interne?",["I mitocondri","I ribosomi","I lisosomi","I nucleoli"],"Al microscopio elettronico a trasmissione i mitocondri appaiono più elettrondensi, con le creste ben visibili all'interno."],
+["O","Quale affermazione è corretta?",["Il mitocondrio ha due membrane, il ribosoma nessuna","Il mitocondrio non ha membrane, il ribosoma ne ha due","Entrambi hanno una membrana","Entrambi sono privi di membrana"],"È la coppia da non confondere all'esame: mitocondrio doppia membrana, ribosoma nessuna membrana."],
+["O","Che cosa sono i nucleoli?",["Regioni del nucleo dove si sintetizza l'RNA ribosomiale","Piccoli nuclei dei batteri","Organelli a doppia membrana del citoplasma","Vescicole del Golgi"],"Nei nucleoli si produce l'rRNA, che con le proteine forma i ribosomi. Si vedono bene al TEM come zone dense dentro il nucleo."],
+["O","Che cosa permette la compartimentalizzazione nella cellula eucariotica?",["Svolgere in spazi separati funzioni che richiedono condizioni diverse","Fare a meno dei ribosomi","Eliminare il bisogno di energia","Rendere la cellula più piccola dei batteri"],"Un lisosoma a pH 5 o un mitocondrio con il suo gradiente protonico esistono solo grazie a membrane che separano i compartimenti dal resto della cellula."],
+["O","La membrana plasmatica può introflettersi per inglobare materiale. Come si chiama questo processo quando inghiotte un batterio?",["Fagocitosi","Esocitosi","Scissione binaria","Osmosi"],"Nella fagocitosi la membrana avvolge la particella e la porta dentro in un fagosoma. L'esocitosi è il processo opposto: vescicole che si fondono con la membrana e rilasciano il contenuto all'esterno."],
+// ===== PROCARIOTI VS EUCARIOTI =====
+["PE","Qual è la differenza fondamentale tra cellula procariotica ed eucariotica?",["La presenza di un nucleo delimitato da membrana negli eucarioti","La presenza di ribosomi solo negli eucarioti","La presenza di membrana plasmatica solo nei procarioti","La presenza di DNA solo negli eucarioti"],"Il nome stesso lo dice: eucariote = «vero nucleo», procariote = «prima del nucleo». Ribosomi, membrana e DNA ci sono in entrambi."],
+["PE","Che cosa significa letteralmente «eucariote»?",["Con un vero (buon) nucleo","Prima del nucleo","Senza nucleo","Con molti nuclei"],"Dal greco eu (buono, vero) e káryon (nucleo, nocciolo)."],
+["PE","Che cosa significa letteralmente «procariote»?",["Prima del nucleo","Con un vero nucleo","Con due nuclei","Nucleo esterno"],"Pro = prima, káryon = nucleo: organismi che non hanno ancora un nucleo delimitato."],
+["PE","Come si chiama la regione in cui si raccoglie il DNA batterico?",["Nucleoide","Nucleolo","Nucleo","Nucleosoma"],"Il nucleoide è un aggregato di DNA libero nel citoplasma, non delimitato da membrana. Il nucleolo è una regione del nucleo eucariotico."],
+["PE","Il nucleoide batterico è delimitato da una membrana?",["No, il DNA è libero nel citoplasma","Sì, da una doppia membrana","Sì, da una membrana singola","Sì, dalla parete di peptidoglicano"],"Il DNA tende ad aggregarsi per motivi biochimici, ma nessuna membrana lo separa dal resto del citoplasma."],
+["PE","Il DNA batterico è organizzato in cromatina con istoni come il nostro?",["No, è DNA sostanzialmente libero","Sì, identico al nostro","Sì, ma con il doppio degli istoni","Sì, ma solo durante la divisione"],"A lezione è stato sottolineato: la cromatina, con istoni, proteine accessorie e domini aperti e chiusi, è degli eucarioti. Gli archei hanno proteine simili agli istoni, i batteri no."],
+["PE","Quanto sono grandi, indicativamente, le cellule eucariotiche rispetto ai batteri?",["Circa 10 volte più grandi, o anche di più","Circa 10 volte più piccole","Della stessa dimensione","Circa 1000 volte più piccole"],"Le cellule eucariotiche misurano in genere decine di micrometri, i batteri pochi micrometri. Per questo le nostre cellule immunitarie possono fagocitare i batteri."],
+["PE","Il citoplasma della cellula procariotica è:",["Non compartimentalizzato: un «unico minestrone»","Diviso in compartimenti come quello eucariotico","Privo di ribosomi","Racchiuso nel nucleo"],"Nel batterio DNA, ribosomi, RNA e proteine stanno tutti liberi nello stesso spazio. Nell'eucariote ci sono organelli separati da membrane."],
+["PE","Che tipo di ribosomi hanno i batteri?",["70S, più piccoli","80S, più grandi","Nessuno","Ribosomi a doppia membrana"],"I batteri hanno ribosomi 70S; gli eucarioti 80S nel citoplasma. La differenza è sfruttata da alcuni antibiotici che colpiscono solo i ribosomi batterici."],
+["PE","Che tipo di ribosomi si trovano nel citoplasma delle nostre cellule?",["80S","70S","50S","Nessuno: noi non abbiamo ribosomi"],"Gli eucarioti hanno ribosomi citoplasmatici 80S. (I mitocondri, per la loro origine batterica, ne hanno di simili ai 70S.)"],
+["PE","Come si dividono i batteri?",["Per scissione binaria","Per mitosi","Per meiosi","Per fecondazione"],"Il batterio cresce, si strozza a metà e si separa in due cellule figlie. Mitosi e meiosi sono processi degli eucarioti."],
+["PE","La scissione binaria è una riproduzione:",["Asessuata: il batterio produce una copia di sé","Sessuata, con rimescolamento genetico","Che richiede due batteri di sesso diverso","Tipica dei mammiferi"],"Non c'è fusione di gameti. Le due cellule figlie sono copie della madre."],
+["PE","Quali processi di divisione usano le cellule eucariotiche?",["Mitosi e/o meiosi","Solo scissione binaria","Solo gemmazione","Nessuno: non si dividono"],"La mitosi produce cellule figlie identiche; la meiosi produce i gameti per la riproduzione sessuata, con rimescolamento del patrimonio genetico."],
+["PE","Oltre alla scissione binaria, quale altro meccanismo di divisione è stato citato per alcuni procarioti?",["La gemmazione","La meiosi","La fecondazione","L'apoptosi"],"Alcuni procarioti possono riprodursi per gemmazione, ma il meccanismo principale resta la scissione binaria."],
+["PE","Gli organismi procarioti sono:",["Sempre unicellulari, anche quando formano aggregati","Sempre pluricellulari","Unicellulari o pluricellulari come gli animali","Pluricellulari solo nell'intestino"],"I batteri possono formare colonie o aggregati, ma ogni cellula resta un individuo singolo."],
+["PE","Gli organismi eucarioti possono essere unicellulari?",["Sì, ad esempio protozoi e lieviti","No, mai","Sì, ma solo le piante","Solo gli archei"],"Gli eucarioti comprendono sia unicellulari (protozoi, lieviti, amebe) sia pluricellulari (animali, piante, gran parte dei funghi)."],
+["PE","Il codice genetico di batteri e uomo è:",["Lo stesso: stesse basi e stessa «lingua»","Completamente diverso","Basato su basi azotate diverse","Assente nei batteri"],"Le quattro basi (A, T, G, C) e il modo in cui il DNA è letto sono gli stessi. Cambia come sono combinate, non i mattoncini."],
+["PE","Quali basi azotate formano il DNA, sia nei batteri sia nell'uomo?",["Adenina, timina, guanina, citosina","Adenina, uracile, guanina, citosina","Solo adenina e timina","Basi diverse in batteri e uomo"],"Il DNA usa A, T, G, C in tutti gli organismi. L'uracile sostituisce la timina nell'RNA."],
+["PE","Il flusso DNA → RNA → proteina è presente:",["Sia nei procarioti sia negli eucarioti","Solo negli eucarioti","Solo nei batteri","Solo nei virus"],"È il cosiddetto dogma centrale, conservato fin dai batteri: un segno della comune origine di tutti i viventi."],
+["PE","Quali elementi hanno in comune TUTTE le cellule?",["Membrana plasmatica, citoplasma, ribosomi, DNA","Nucleo, mitocondri, ribosomi, DNA","Parete cellulare, cloroplasti, DNA, RNA","Golgi, lisosomi, citoplasma, DNA"],"Questi quattro elementi sono condivisi da procarioti ed eucarioti. Nucleo, mitocondri, Golgi e lisosomi sono solo degli eucarioti."],
+["PE","Quale di queste strutture NON si trova nei procarioti?",["Reticolo endoplasmatico","Ribosomi","Membrana plasmatica","DNA"],"I procarioti non hanno organelli delimitati da membrana: niente RE, Golgi, lisosomi, mitocondri."],
+["PE","I batteri possiedono mitocondri?",["No: nessun organello delimitato da membrana","Sì, più dei nostri","Sì, ma solo i Gram-positivi","Sì, ma senza creste"],"I batteri non hanno mitocondri. Anzi, secondo la teoria endosimbiotica i mitocondri sono essi stessi antichi batteri."],
+["PE","Dove avviene la respirazione aerobia nei batteri, visto che non hanno mitocondri?",["Sulla membrana plasmatica","Nel nucleo","Nei lisosomi","Nel Golgi"],"Nei batteri aerobi la catena respiratoria si trova sulla membrana plasmatica. Non a caso la membrana interna mitocondriale ricorda quella batterica."],
+["PE","I batteri hanno l'apparato di Golgi?",["No","Sì","Solo i Gram-negativi","Solo quelli del microbiota"],"Il Golgi è un organello a membrana, tipico degli eucarioti."],
+["PE","I batteri possiedono una forma di citoscheletro?",["Sì, proteine che mantengono la forma e aiutano la divisione","No, mai","Sì, identico al nostro","Solo gli archei"],"A lezione è stato detto che anche i batteri hanno proteine strutturali che mantengono la forma (bacillo, cocco) e strozzano la cellula durante la divisione."],
+["PE","Che cosa sono i plasmidi?",["Piccole molecole di DNA accessorio presenti tipicamente nei batteri","Organelli a doppia membrana","Proteine della membrana","Ribosomi batterici"],"Sono DNA accessorio, separato dal cromosoma batterico. A lezione sono solo citati: argomento di microbiologia."],
+["PE","A che cosa servono flagelli e pili nei batteri?",["Alla mobilità e all'interazione con l'ambiente","Alla fotosintesi","A produrre ATP","A contenere il DNA"],"I flagelli ruotano e spingono il batterio. I pili sono appendici più corte, coinvolte anche nell'adesione."],
+["PE","Che cos'è la capsula batterica?",["Uno strato esterno di zuccheri o proteine presente in alcuni batteri","Il nucleo dei batteri","Un organello a doppia membrana","Il nome del citoplasma batterico"],"Non tutti i batteri l'hanno. Protegge il batterio e lo aiuta a mantenere forma e resistenza."],
+["PE","Quale processo metabolico è comune a batteri ed eucarioti?",["La glicolisi","Il ciclo di Krebs nei mitocondri","La fotosintesi nei cloroplasti","La digestione lisosomiale"],"La glicolisi, fase iniziale del metabolismo degli zuccheri, avviene nel citoplasma di entrambi e produce piruvato."],
+["PE","Dopo la glicolisi, che cosa fanno tipicamente molti batteri con il piruvato?",["Lo fermentano in acido lattico, alcol etilico o altri prodotti","Lo portano nei mitocondri","Lo trasformano in DNA","Lo accumulano nel nucleo"],"Molti batteri fermentano. Noi invece portiamo il piruvato nel ciclo di Krebs e poi nei mitocondri."],
+["PE","Che cosa fanno le nostre cellule con il piruvato in presenza di ossigeno?",["Lo usano nel ciclo di Krebs e nella respirazione mitocondriale","Lo espellono subito","Lo trasformano in cellulosa","Lo fermentano sempre in alcol"],"Il piruvato entra nei mitocondri, dove ciclo di Krebs e catena respiratoria producono molto ATP."],
+["PE","Riguardo all'ossigeno, quale affermazione è corretta?",["Le nostre cellule ne hanno bisogno; i batteri possono essere aerobi, anaerobi o aerobi facoltativi","Tutti i batteri muoiono con l'ossigeno","Le cellule eucariotiche non usano ossigeno","Nessun batterio usa ossigeno"],"I batteri hanno grande varietà: alcuni vivono senza ossigeno, altri lo richiedono, altri si adattano a entrambe le condizioni."],
+["PE","Che cosa significa che i batteri hanno una grande «plasticità metabolica»?",["Nel loro insieme svolgono reazioni molto varie, anche se ogni specie ne fa una parte","Ogni batterio fa più reazioni di una cellula umana","Non hanno metabolismo","Possono cambiare il proprio DNA a piacere"],"Ogni singolo batterio fa «un pezzettino»; tutti insieme fermentano la cellulosa, respirano senza ossigeno, producono metano. La singola cellula eucariotica invece fa molte più cose da sola."],
+["PE","Perché le mucche riescono a nutrirsi di erba?",["Grazie ai batteri che digeriscono la cellulosa","Perché le loro cellule hanno cloroplasti","Perché producono enzimi lisosomiali speciali","Perché la cellulosa non è uno zucchero"],"La cellulosa è uno zucchero che le cellule animali non digeriscono. I ruminanti ospitano batteri capaci di fermentarla."],
+["PE","Batteri e cellule eucariotiche sono entrambi in grado di:",["Percepire l'ambiente e rispondere, ad esempio dirigendosi verso il cibo","Fare fotosintesi","Formare tessuti","Dividersi per meiosi"],"Con meccanismi diversi, tutte le cellule sentono l'ambiente e reagiscono."],
+["PE","Che cosa suggeriscono le somiglianze tra batteri ed eucarioti (codice genetico, ribosomi, glicolisi)?",["Un antenato comune molto antico","Che gli eucarioti siano nati prima dei batteri","Che i batteri derivino dall'uomo","Nulla, sono coincidenze"],"Caratteri conservati in tutti i viventi indicano un'origine comune: un nostro antenato lontanissimo era simile a un batterio."],
+["PE","I batteri del nostro microbiota sono cellule:",["Procariotiche","Eucariotiche","Vegetali","Nucleate"],"Il microbiota batterico è fatto di procarioti; le cellule del nostro corpo sono eucariotiche."],
+["PE","Le cellule del corpo umano sono:",["Eucariotiche","Procariotiche","Prive di nucleo","Archee"],"Siamo eucarioti: le nostre cellule hanno nucleo e organelli delimitati da membrana."],
+["PE","Quale coppia «struttura – tipo cellulare» è corretta?",["Nucleoide – procarioti","Nucleo – procarioti","Mitocondri – procarioti","Golgi – procarioti"],"Il nucleoide è tipico dei procarioti. Nucleo, mitocondri e Golgi sono eucariotici."],
+["PE","Quale affermazione sui procarioti è FALSA?",["Hanno lisosomi per digerire i batteri fagocitati","Hanno ribosomi 70S","Hanno DNA nel nucleoide","Si dividono per scissione binaria"],"I procarioti non hanno lisosomi né altri organelli a membrana. Le altre tre affermazioni sono corrette."],
+["PE","Quale affermazione sugli eucarioti è FALSA?",["Il loro DNA è libero nel citoplasma","Hanno un nucleo delimitato da membrana","Hanno ribosomi 80S","Possono essere pluricellulari"],"Negli eucarioti il DNA è racchiuso nel nucleo. DNA libero nel citoplasma è una caratteristica dei procarioti."],
+["PE","Gli archei sono:",["Procarioti, spesso estremofili","Eucarioti pluricellulari","Virus","Organelli delle cellule vegetali"],"Gli archei sono un dominio a sé: unicellulari senza nucleo, spesso in ambienti estremi (caldo, freddo, salinità altissima)."],
+["PE","In che cosa gli archei somigliano un po' agli eucarioti, secondo la lezione?",["Hanno proteine simili agli istoni che organizzano il DNA","Hanno un nucleo","Hanno mitocondri","Sono pluricellulari"],"A lezione: i batteri hanno DNA libero, mentre gli archei hanno qualcosa di simile a una cromatina."],
+["PE","Che cosa compie una cellula eucariotica che un batterio non può fare?",["Separare funzioni in compartimenti con condizioni diverse (es. pH 5 nei lisosomi)","Produrre proteine","Avere DNA","Dividersi"],"Senza membrane interne il batterio non può creare ambienti con condizioni diverse dal resto del citoplasma. Proteine, DNA e divisione invece li hanno tutti."],
+// ===== CELLULA VEGETALE =====
+["V","Le cellule vegetali possiedono mitocondri?",["Sì, oltre ai cloroplasti","No, hanno solo cloroplasti","No, i mitocondri sono solo animali","Solo di notte"],"Altro trabocchetto classico. Le piante hanno sia cloroplasti (fotosintesi) sia mitocondri (respirazione cellulare). I cloroplasti producono zuccheri; i mitocondri li usano per fare ATP."],
+["V","Una cellula vegetale della foglia contiene:",["Sia mitocondri sia cloroplasti","Solo cloroplasti","Solo mitocondri","Né mitocondri né cloroplasti"],"La foglia fa fotosintesi nei cloroplasti e respirazione nei mitocondri, entrambe necessarie."],
+["V","Perché una pianta ha bisogno di mitocondri se fa la fotosintesi?",["La fotosintesi produce zuccheri; i mitocondri li trasformano in ATP con la respirazione","Non ne ha bisogno: i mitocondri sono inattivi","I mitocondri fanno la fotosintesi al buio","I mitocondri servono solo a immagazzinare acqua"],"La fotosintesi immagazzina energia negli zuccheri. Per usarla, la cellula deve respirare: ciò avviene nei mitocondri, giorno e notte e anche nelle parti senza luce."],
+["V","Le cellule delle radici di una pianta, che non ricevono luce:",["Hanno mitocondri ma in genere non cloroplasti","Hanno cloroplasti ma non mitocondri","Non hanno né mitocondri né cloroplasti","Non sono cellule eucariotiche"],"Le radici non fanno fotosintesi, ma respirano: ricevono zuccheri dalle foglie e li usano nei propri mitocondri."],
+["V","L'affermazione «le piante hanno cloroplasti al posto dei mitocondri» è:",["Falsa: le piante hanno entrambi","Vera","Vera solo per le foglie","Vera solo per le alghe"],"I cloroplasti non sostituiscono i mitocondri. Sono organelli diversi con funzioni diverse e si trovano insieme nella cellula vegetale."],
+["V","Quali sono le tre principali strutture che la cellula vegetale ha in più rispetto a quella animale?",["Parete cellulare, grande vacuolo, cloroplasti","Mitocondri, ribosomi, nucleo","Golgi, lisosomi, centrioli","Nucleoide, plasmidi, flagelli"],"Questo è l'elenco visto a lezione. Mitocondri, ribosomi, nucleo e Golgi li hanno sia animali sia vegetali."],
+["V","Quale di queste strutture NON è esclusiva della cellula vegetale?",["Il mitocondrio","Il cloroplasto","La parete di cellulosa","Il grande vacuolo centrale"],"I mitocondri sono presenti sia nelle cellule animali sia in quelle vegetali."],
+["V","Di che cosa è fatta principalmente la parete della cellula vegetale?",["Cellulosa","Peptidoglicano","Colesterolo","Cheratina"],"La parete vegetale è di cellulosa. Il peptidoglicano forma la parete dei batteri: sono strutture diverse."],
+["V","Che funzione ha la parete cellulare vegetale?",["Dare rigidità, tono e struttura alla cellula","Produrre ATP","Contenere il DNA","Fare la fotosintesi"],"La parete rende le cellule vegetali rigide. Le cellule animali, senza parete, sono più morbide e modellabili."],
+["V","A che cosa serve il grande vacuolo della cellula vegetale?",["È una riserva di acqua e contribuisce al turgore","Produce proteine","Fa la fotosintesi","Contiene il DNA"],"Il vacuolo accumula acqua e soluti; la pressione dell'acqua contro la parete mantiene la cellula turgida."],
+["V","Perché le cellule vegetali sono verdi?",["Per la clorofilla nei cloroplasti","Per i mitocondri","Per l'emoglobina","Per il colore della parete"],"La clorofilla assorbe la luce e appare verde. È un esempio, visto a lezione, di cellula che ha un colore proprio."],
+["V","I cloroplasti sono delimitati da:",["Una doppia membrana","Nessuna membrana","Una membrana singola","Una parete di cellulosa"],"Come i mitocondri, i cloroplasti hanno doppia membrana e un proprio DNA: anche loro derivano probabilmente da un batterio inglobato."],
+["V","Secondo la teoria endosimbiotica, i cloroplasti derivano da:",["Un batterio fotosintetico inglobato","Un pezzo di nucleo","Una vescicola del Golgi","Un ribosoma ingrandito"],"Lo stesso schema dei mitocondri: un batterio fagocitato, non digerito e diventato organello. Per i cloroplasti si pensa a un antenato simile ai cianobatteri."],
+["V","Le cellule animali hanno una parete cellulare?",["No","Sì, di cellulosa","Sì, di peptidoglicano","Solo i neuroni"],"Le cellule animali hanno solo la membrana plasmatica, per questo sono deformabili."],
+["V","Le cellule animali hanno cloroplasti?",["No","Sì, nei muscoli","Sì, nel fegato","Solo gli eritrociti"],"I cloroplasti sono tipici di piante e alghe."],
+["V","La cellula vegetale è:",["Eucariotica, con nucleo e organelli","Procariotica","Priva di nucleo","Priva di ribosomi"],"Le piante sono eucarioti: hanno nucleo, RE, Golgi, ribosomi, mitocondri, più parete, vacuolo e cloroplasti."],
+["V","Quale affermazione sulla cellula vegetale è corretta?",["Ha nucleo, mitocondri, cloroplasti e parete","Ha cloroplasti ma non nucleo","Ha mitocondri ma non ribosomi","Ha peptidoglicano come i batteri"],"È una cellula eucariotica completa con in più le strutture vegetali tipiche."],
+["V","Rispetto alle cellule animali, le cellule vegetali sono:",["Più rigide, grazie alla parete","Più morbide","Prive di forma","Più piccole dei batteri"],"La parete di cellulosa le rende rigide; le cellule animali sono tendenzialmente modellabili."],
+["V","Perché l'insalata non ci fa ingrassare, secondo l'esempio della lezione?",["Contiene cellulosa che noi non riusciamo a digerire","Non contiene zuccheri","Contiene troppa acqua per essere assorbita","La clorofilla blocca l'assorbimento"],"La cellulosa delle pareti vegetali è uno zucchero, ma noi non abbiamo gli enzimi per digerirla: per noi è fibra."],
+["V","Quale coppia «organello – funzione» è corretta in una cellula vegetale?",["Cloroplasto – fotosintesi; mitocondrio – respirazione","Cloroplasto – respirazione; mitocondrio – fotosintesi","Vacuolo – fotosintesi; parete – respirazione","Mitocondrio assente; cloroplasto fa tutto"],"Ogni organello ha la sua funzione, e nella cellula vegetale coesistono."],
+// ===== VIVENTI E DOMINI =====
+["D","Quali sono le tre caratteristiche fondamentali degli esseri viventi presentate a lezione?",["Svolgono funzioni specifiche, derivano da altri viventi e si rigenerano, si riproducono","Hanno nucleo, mitocondri e cloroplasti","Sono pluricellulari, si muovono, respirano","Hanno DNA, RNA e cellulosa"],"Le tre caratteristiche: funzione, origine/rigenerazione e riproduzione. Valgono sia per un organismo intero sia per la singola cellula."],
+["D","I virus sono esseri viventi?",["È una questione aperta: non c'è accordo","Sì, sono procarioti","Sì, sono eucarioti","No, sono organelli"],"A lezione sui virus si mette «un punto interrogativo»: non hanno metabolismo proprio e si riproducono solo dentro una cellula."],
+["D","Che cosa afferma la teoria cellulare?",["La cellula è l'unità fondamentale di tutti i viventi","Tutti i viventi hanno un nucleo","Le cellule nascono dalla materia inerte ogni giorno","Solo gli animali sono fatti di cellule"],"Ogni organismo vivente è fatto di una o più cellule, e ogni cellula deriva da un'altra cellula."],
+["D","Secondo la lezione, qual è la caratteristica chiave che permette alla cellula di svolgere le sue funzioni?",["La sua organizzazione (compartimentalizzazione)","La sua dimensione","Il suo colore","La presenza di parete"],"I sistemi viventi spendono energia per mantenersi ordinati, contro la tendenza al disordine (entropia)."],
+["D","Che cos'è la compartimentalizzazione?",["L'organizzazione della cellula in compartimenti separati da membrane","La divisione della cellula in due","La perdita del nucleo","La formazione dei tessuti"],"Il compartimento più semplice è quello definito dalla membrana plasmatica; negli eucarioti si aggiungono tutti gli organelli."],
+["D","Qual è la categoria più ampia nella classificazione dei viventi?",["Il dominio","Il regno","La specie","Il genere"],"Sotto i domini vengono regni, phyla e così via."],
+["D","Quali sono i tre domini della vita?",["Batteri, Archei, Eucarioti","Animali, Piante, Funghi","Procarioti, Virus, Eucarioti","Batteri, Funghi, Animali"],"Batteri e archei sono procarioti; gli eucarioti comprendono animali, piante, funghi e protisti."],
+["D","A quale dominio appartiene l'uomo?",["Eucarioti (Eukarya)","Batteri","Archei","Nessuno"],"Siamo eucarioti, come piante, funghi e protozoi."],
+["D","Perché gli archei sono detti estremofili?",["Vivono spesso in ambienti estremi: caldo, freddo, alta salinità","Sono estremamente grandi","Sono estremamente pericolosi","Vivono solo nell'intestino"],"Molti archei prosperano dove altri organismi non sopravvivono."],
+["D","Come si separano le dita durante lo sviluppo embrionale?",["Per apoptosi delle cellule tra le dita","Per scissione binaria","Per fagocitosi da parte di batteri","Per osmosi"],"L'apoptosi è una morte cellulare programmata e fisiologica. Lo stesso concetto è centrale nelle terapie antitumorali."],
+["D","Qual è il concetto fondamentale della biologia cellulare, secondo la lezione?",["Il rapporto struttura-funzione","La teoria del big bang","La generazione spontanea","L'ereditarietà dei caratteri acquisiti"],"La forma di una cellula o di un organello riflette sempre la sua funzione."],
+["D","Perché i neuroni sono così lunghi?",["Perché trasmettono impulsi anche tra parti distanti del corpo","Perché immagazzinano acqua","Perché devono fagocitare batteri","Perché fanno la fotosintesi"],"Esempio diretto di rapporto struttura-funzione."],
+["D","Perché le cellule epiteliali sono piatte e strettamente unite?",["Per formare una barriera protettiva, come la pelle","Per trasmettere impulsi","Per contrarsi","Per produrre ATP"],"Il citoscheletro le tiene «incollate» in uno strato continuo."],
+["D","Qual è la cellula più estesa del corpo umano, secondo la lezione?",["Alcuni neuroni, lunghi fino a circa un metro","Il globulo rosso","Il batterio intestinale","Il linfocita"],"Per estensione vincono i neuroni con assoni lunghissimi. Per volume la cellula più grande è l'ovocita."],
+// ===== BATTERI E MICROBIOTA =====
+["B","Di che colore appaiono i batteri Gram-positivi dopo la colorazione di Gram?",["Viola","Rosa","Verdi","Incolori"],"I Gram-positivi trattengono il colorante viola grazie allo spesso strato di peptidoglicano."],
+["B","Di che colore appaiono i batteri Gram-negativi?",["Rosa","Viola","Blu scuro","Gialli"],"Perdono il viola e si colorano con il colorante di contrasto, rosa."],
+["B","Che cosa caratterizza la parete dei Gram-positivi?",["Uno spesso strato di peptidoglicano e nessuna membrana esterna","Un sottile strato di peptidoglicano e una membrana esterna","Una parete di cellulosa","L'assenza di membrana plasmatica"],"Spesso peptidoglicano, una sola membrana (quella plasmatica)."],
+["B","Che cosa caratterizza la parete dei Gram-negativi?",["Un sottile strato di peptidoglicano e una seconda membrana esterna","Uno spesso strato di peptidoglicano senza membrana esterna","Una doppia parete di cellulosa","Nessuna membrana"],"La membrana esterna e il peptidoglicano sottile spiegano perché perdono il colorante viola."],
+["B","Perché la colorazione di Gram è utile in clinica?",["Orienta subito la scelta dell'antibiotico","Identifica con precisione la specie","Misura la resistenza agli antibiotici","Serve a vedere i virus"],"Esistono antibiotici più efficaci sui Gram-positivi o sui Gram-negativi. Dopo il Gram servono comunque analisi per identificare il batterio."],
+["B","Quanto tempo richiede circa la colorazione di Gram?",["Circa mezz'ora","Circa una settimana","Circa un mese","Pochi secondi"],"È una tecnica semplice e veloce: si mette il campione su un vetrino e si osserva se diventa viola o rosa."],
+["B","Chi esegue di norma la colorazione di Gram in ospedale?",["I tecnici di laboratorio","Gli infermieri","I pazienti","I farmacisti"],"L'infermiere non la esegue, ma deve capire che cosa significa il referto e le sue conseguenze sulla terapia."],
+["B","Che vantaggio hanno i test molecolari rispetto alla colorazione di Gram?",["Servono pochissimo campione e danno risultati specifici","Sono più economici di un vetrino","Non richiedono un campione","Funzionano solo sui Gram-positivi"],"La colorazione richiede una buona quantità di batteri; con un tampone respiratorio ad esempio se ne raccolgono pochi."],
+["B","Che forma hanno i cocchi?",["Sferica","A bastoncello","A spirale","A virgola"],"Bacilli = bastoncelli, spirilli = spirale, vibrioni = virgola."],
+["B","Che forma hanno i bacilli?",["A bastoncello","Sferica","A spirale","A stella"],"La forma è una delle prime classificazioni dei batteri."],
+["B","Come vengono eliminati i batteri patogeni da parte delle nostre cellule immunitarie?",["Per fagocitosi","Per osmosi","Per scissione binaria","Per fotosintesi"],"La cellula avvolge il batterio con la propria membrana e lo digerisce."],
+["B","Quali cellule sono specializzate nella fagocitosi dei batteri?",["Neutrofili, macrofagi, cellule dendritiche","Eritrociti e piastrine","Neuroni e cellule muscolari","Cellule epiteliali della pelle"],"Sono cellule del sistema immunitario."],
+["B","La fagocitosi è un meccanismo:",["Antichissimo, già presente in organismi unicellulari come le amebe","Comparso solo nei mammiferi","Tipico dei batteri","Tipico delle piante"],"Lo abbiamo ereditato da antenati unicellulari."],
+["B","Che cos'è il microbiota?",["L'insieme dei microrganismi che vivono con noi, con funzioni utili","Un tipo di microscopio","Un organello dei batteri","Una malattia infettiva"],"Non tutti i batteri sono patogeni."],
+["B","Dove si trova il microbiota?",["In bocca, intestino, vagina, pelle e altre sedi","Solo nell'intestino","Solo nel sangue","Solo nel cervello"],"Siamo letteralmente rivestiti di batteri."],
+["B","Perché i nati da parto cesareo possono avere un microbiota meno funzionale?",["Non passano per il canale vaginale e non ricevono quei batteri materni","Perché ricevono troppi antibiotici dal latte","Perché nascono senza ribosomi","Perché il cesareo elimina i mitocondri"],"L'allattamento materno trasmette comunque parte del microbiota."],
+["B","Che cos'è il trapianto di microbiota fecale?",["Inserire nel paziente microbiota intestinale di un donatore sano per ristabilire l'equilibrio","Un trapianto di intestino","Una colorazione batterica","Un antibiotico"],"È usato per alcune patologie infiammatorie intestinali."],
+["B","Perché l'antibiotico-resistenza è un problema clinico importante?",["Molti batteri sono diventati resistenti a quasi tutti gli antibiotici","Gli antibiotici non esistono più","I virus sono diventati batteri","I batteri hanno sviluppato il nucleo"],"È una delle grandi sfide della clinica dei prossimi anni."],
+["B","Quale ruolo è stato sottolineato per l'infermiere riguardo alle malattie sessualmente trasmissibili?",["Prevenzione ed educazione sanitaria, oltre alla cura","Solo la diagnosi di laboratorio","Nessuno","Solo la prescrizione dei farmaci"],"Sono in forte aumento tra i giovani e la prevenzione non si fa abbastanza."],
+["B","Esistono virus capaci di infettare i batteri?",["Sì, i batteriofagi","No","Sì, ma solo nelle piante","Solo negli archei"],"A lezione: esistono virus batterici, quindi i virus sono ancora più piccoli dei batteri."],
+// ===== MICROSCOPIA =====
+["M","In quale ordine di grandezza si misurano le nostre cellule?",["Micrometri (10⁻⁶ m)","Millimetri","Nanometri (10⁻⁹ m)","Metri"],"Le strutture subcellulari, visibili al microscopio elettronico, arrivano ai nanometri."],
+["M","Che cosa usa il microscopio ottico per formare l'immagine?",["La luce","Gli elettroni","Il suono","I raggi X"],"È il microscopio del laboratorio scolastico e dell'istologia."],
+["M","Che cosa usa il microscopio elettronico?",["Un fascio di elettroni","La luce visibile","Gli ultrasuoni","Il campo magnetico terrestre"],"Il campione viene bombardato da elettroni e l'immagine è ricostruita dal segnale."],
+["M","Che cosa mostra il microscopio elettronico a scansione (SEM)?",["La superficie e la forma esterna della cellula","L'interno degli organelli tagliati a fette","Solo il DNA","I colori naturali della cellula"],"Con il SEM si vedono pili dei batteri, microvilli intestinali e altre strutture di superficie."],
+["M","Che cosa mostra il microscopio elettronico a trasmissione (TEM)?",["L'interno della cellula, compresi gli organelli","Solo la superficie","I colori naturali","Solo i batteri vivi in movimento"],"Gli elettroni attraversano una sezione sottilissima: si vedono nucleo, nucleoli, RER, mitocondri."],
+["M","Quale strumento permette di vedere le creste mitocondriali?",["Il microscopio elettronico a trasmissione","Una lente d'ingrandimento","Il microscopio ottico da scuola","L'occhio nudo"],"Sono strutture troppo piccole per la luce visibile."],
+["M","Perché le immagini al microscopio elettronico sono in bianco e nero?",["Il segnale degli elettroni dipende solo dalla densità: dà una scala di grigi","Perché le cellule sono nere","Perché lo schermo è vecchio","Perché i colori vengono assorbiti dal nucleo"],"Le cellule di per sé non hanno colore. Le immagini elettroniche colorate sono state colorate dopo."],
+["M","In un'immagine al TEM l'eterocromatina appare:",["Scura: DNA condensato e poco trascritto","Chiara: DNA attivamente trascritto","Verde","Invisibile"],"L'eucromatina, più chiara, è il DNA aperto e attivamente trascritto."],
+["M","Perché lo spazio extracellulare appare chiaro al TEM?",["Non c'è materiale denso che interagisca con gli elettroni","Perché è pieno di DNA","Perché contiene clorofilla","Perché è acido"],"Le zone elettrondense appaiono scure, quelle vuote chiare."],
+["M","Perché i globuli rossi hanno un colore rosso proprio?",["Per l'emoglobina, con il gruppo eme","Per la clorofilla","Per la melanina","Per i mitocondri"],"La maggior parte delle cellule invece è trasparente al microscopio."],
+["M","A che cosa serve la colorazione ematossilina-eosina?",["A osservare cellule e tessuti in istologia","A vedere i virus","A misurare il pH","A colorare i batteri Gram-positivi"],"È la colorazione classica dei preparati istologici, ad esempio dopo una biopsia."],
+["M","Come si rendono fluorescenti strutture specifiche delle nostre cellule?",["Con anticorpi marcati che riconoscono proteine precise","Le cellule sono fluorescenti di natura","Scaldandole","Con la colorazione di Gram"],"È l'immunofluorescenza: si sceglie che cosa marcare."],
+["M","Che limite ha l'immunofluorescenza rispetto all'ematossilina-eosina?",["Si vede bene solo ciò che si è marcato, spesso senza la morfologia complessiva","Non si vede nulla","Funziona solo sui batteri","Distrugge il citoscheletro"],"In compenso permette di vedere dettagli come il citoscheletro, che con l'ematossilina-eosina si perdono."],
+["M","Che cosa si può studiare con l'immunofluorescenza?",["Citoscheletro, localizzazione di proteine, espressione di proteine nei tumori","Solo la forma dei batteri","Solo il colore del sangue","Il codice genetico"],"Le applicazioni sono moltissime, sia in ricerca sia in diagnostica."],
+// ===== MEMBRANA CELLULARE =====
+["MB","Di che cosa è fatta principalmente la membrana cellulare?",["Fosfolipidi, con proteine e colesterolo","Cellulosa","Peptidoglicano","DNA"],"La base è il doppio strato fosfolipidico; proteine e colesterolo sono inseriti al suo interno."],
+["MB","La testa di un fosfolipide è:",["Polare e idrofila, per il gruppo fosfato carico negativamente","Apolare e idrofoba","Fatta di colesterolo","Priva di carica e insolubile"],"La testa sta bene in acqua; le code lipidiche no."],
+["MB","Le code dei fosfolipidi sono:",["Idrofobe","Idrofile","Cariche negativamente","Fatte di proteine"],"Le code lipidiche evitano l'acqua e si rivolgono le une verso le altre all'interno del doppio strato."],
+["MB","Perché la membrana è un DOPPIO strato fosfolipidico?",["Perché dentro e fuori c'è acqua: le teste guardano l'acqua, le code si nascondono all'interno","Per fare fotosintesi","Perché un solo strato è troppo sottile per vedersi","Perché i ribosomi lo richiedono"],"Un singolo strato non regge in un ambiente acquoso su entrambi i lati."],
+["MB","Una «membrana» corrisponde a:",["Un doppio strato fosfolipidico","Un singolo strato fosfolipidico","Due doppi strati","Quattro doppi strati"],"Da non confondere: il mitocondrio ha due membrane, quindi due doppi strati."],
+["MB","Che ruolo ha il colesterolo nella membrana?",["Ne regola la fluidità e la flessibilità","Produce ATP","Trasporta il DNA","Fa la fotosintesi"],"Senza colesterolo la membrana avrebbe proprietà fisiche molto diverse."],
+["MB","Quali tipi di proteine si trovano nella membrana?",["Recettori, proteine di adesione, canali e trasportatori","Solo ribosomi","Solo istoni","Solo emoglobina"],"Ognuna ha funzioni diverse: comunicazione, ancoraggio, passaggio di sostanze."],
+["MB","Quale NON è una funzione della membrana plasmatica?",["Tradurre l'RNA in proteine","Separare l'interno dall'esterno","Permettere comunicazione e riconoscimento","Regolare il trasporto di sostanze"],"La traduzione dell'RNA spetta ai ribosomi."],
+["MB","Come riconosce il sistema immunitario le cellule «estranee»?",["Le «tocca» e riconosce le proteine di membrana non-self","Ne misura il pH","Ne conta i mitocondri","Ne osserva il colore"],"Le cellule immunitarie sono abituate alle proteine delle nostre membrane (self). Proteine diverse attivano la risposta."],
+["MB","Perché un organo trapiantato può essere rigettato?",["Le sue cellule hanno proteine di membrana non-self","Perché ha troppi mitocondri","Perché è privo di nucleo","Perché non ha colesterolo"],"Il sistema immunitario lo riconosce come estraneo e lo attacca."],
+["MB","Perché dopo un trapianto si somministrano immunosoppressori?",["Per impedire al sistema immunitario di attaccare l'organo","Per far crescere l'organo","Per uccidere i batteri dell'organo","Per aumentare il colesterolo"],"Sono i farmaci antirigetto."],
+["MB","Che cosa accade nelle malattie autoimmuni?",["Il sistema immunitario attacca le cellule del proprio organismo (self)","Il sistema immunitario non esiste","I batteri diventano eucarioti","Le membrane perdono i fosfolipidi"],"È un errore di riconoscimento self/non-self."],
+["MB","Perché il corpo non elimina il pigmento di un tatuaggio?",["I macrofagi lo inglobano ma non riescono a degradarlo, e restano nella pelle","Perché il pigmento è riconosciuto come self","Perché la pelle non ha cellule immunitarie","Perché il pigmento è fatto di DNA"],"Con il ricambio della pelle una piccola parte viene comunque rimossa, e il tatuaggio sbiadisce col tempo."],
+["MB","Secondo l'ipotesi più accreditata, qual era la prima molecola «pseudo-vitale»?",["Un RNA autocatalitico capace di autopropagarsi","Una proteina di membrana","Un mitocondrio","Il DNA umano"],"È la cosiddetta ipotesi del mondo a RNA."],
+["MB","Che cosa hanno mostrato gli esperimenti sul «brodo primordiale» (es. Miller-Urey, 1953)?",["Molecole organiche possono formarsi spontaneamente da composti semplici","La vita è nata dai virus","Le cellule si formano in un giorno","Il DNA viene dallo spazio con certezza"],"A lezione l'esperimento è stato collocato negli anni '60; il più noto è del 1953."],
+// ===== TRASPORTO =====
+["T","Dove è più concentrato il sodio (Na⁺)?",["All'esterno della cellula","All'interno della cellula","Nel nucleo","È uguale dentro e fuori"],"Il potassio fa il contrario: è più concentrato dentro."],
+["T","Che cosa comprende il gradiente elettrochimico?",["La differenza di concentrazione e la differenza di carica elettrica","Solo la temperatura","Solo il pH","Solo la pressione"],"Gli ioni sono carichi, quindi conta sia quanti sono sia la carica ai due lati."],
+["T","Che cos'è l'osmosi?",["Il passaggio di acqua attraverso una membrana semipermeabile","Il passaggio di proteine attraverso il nucleo","La divisione dei batteri","La produzione di ATP"],"L'acqua si sposta verso dove il soluto è più concentrato, per equilibrare le concentrazioni."],
+["T","In osmosi, l'acqua si sposta:",["Da dove il soluto è meno concentrato a dove è più concentrato","Da dove il soluto è più concentrato a dove è meno concentrato","Sempre verso l'esterno","Mai"],"Il soluto non può attraversare la membrana semipermeabile, quindi si muove l'acqua."],
+["T","Un globulo rosso in soluzione ipertonica:",["Perde acqua e si raggrinzisce","Si gonfia e scoppia","Resta invariato","Diventa una cellula vegetale"],"Fuori c'è più soluto: l'acqua esce."],
+["T","Un globulo rosso in soluzione ipotonica:",["Assorbe acqua, si gonfia e può scoppiare","Perde acqua e si raggrinzisce","Resta invariato","Perde il nucleo"],"Dentro c'è più soluto: l'acqua entra. La rottura si chiama emolisi."],
+["T","Che cosa caratterizza la diffusione semplice?",["Secondo gradiente, attraverso il doppio strato, senza proteine né energia","Contro gradiente con ATP","Con canali ionici","Con pompe protoniche"],"Riguarda molecole piccole e idrofobiche come O₂ e CO₂."],
+["T","Che cosa caratterizza la diffusione facilitata?",["Secondo gradiente, con proteine di membrana, senza energia","Contro gradiente, con energia","Senza proteine","Solo per l'acqua"],"Le proteine sono canali ionici o carrier."],
+["T","Che cosa caratterizza il trasporto attivo?",["Contro gradiente, con proteine e consumo di energia","Secondo gradiente, senza energia","Attraverso il doppio strato senza proteine","Solo per l'ossigeno"],"È il caso della pompa sodio-potassio."],
+["T","Quale molecola attraversa la membrana per diffusione semplice?",["L'ossigeno (O₂)","Il glucosio","Lo ione sodio","Una proteina"],"Molecole piccole e apolari passano direttamente."],
+["T","Che cosa sono le acquaporine?",["Canali di membrana che fanno passare acqua molto rapidamente","Pompe del sodio","Ribosomi","Organelli vegetali"],"Attraverso le acquaporine passano circa 10⁹ molecole d'acqua al secondo."],
+["T","Perché esistono le acquaporine se l'acqua può attraversare la membrana anche da sola?",["Per velocizzare enormemente il passaggio","Perché l'acqua è idrofoba","Per bloccare l'acqua","Per produrre ATP"],"Il passaggio diretto attraverso il doppio strato è lento."],
+["T","In quali tessuti le acquaporine sono particolarmente importanti?",["Rene e cervello","Unghie e capelli","Ossa","Denti"],"Nel rene servono alla formazione dell'urina."],
+["T","Che cos'è un uniporto?",["Trasporto di una sola molecola in una direzione","Trasporto di due molecole nella stessa direzione","Trasporto di due molecole in direzioni opposte","Trasporto senza proteine"],"Simporto: due molecole stessa direzione. Antiporto: due molecole direzioni opposte."],
+["T","Che cos'è un simporto?",["Trasporto di due molecole diverse nella stessa direzione","Trasporto di una molecola sola","Trasporto di due molecole in direzioni opposte","Diffusione semplice"],"Esempio: sodio e glucosio che entrano insieme nelle cellule intestinali."],
+["T","Che cos'è un antiporto?",["Trasporto di due molecole diverse in direzioni opposte","Trasporto di due molecole nella stessa direzione","Trasporto di una molecola sola","Trasporto senza proteine"],"Esempio: lo scambiatore cloro-bicarbonato dei globuli rossi."],
+["T","Qual è la differenza principale tra canali ionici e proteine carrier?",["I carrier legano la molecola e cambiano conformazione; i canali formano un poro","I canali usano sempre ATP","I carrier trasportano solo ioni","Nessuna differenza"],"Il cambio di conformazione è il segno distintivo dei carrier."],
+["T","Perché la velocità di trasporto mediato da carrier raggiunge un plateau?",["I trasportatori sono in numero limitato e si saturano","Perché finisce l'ATP","Perché la membrana si rompe","Perché il glucosio diventa idrofobo"],"Quando tutti i carrier sono occupati non si può andare più veloci. Nella diffusione semplice invece la velocità cresce in modo lineare."],
+["T","Che cosa permette al canale del potassio di essere selettivo?",["Un filtro di selettività che forma 4 legami di coordinazione con K⁺","Una parete di cellulosa","L'ATP","La clorofilla"],"Lo ione sodio forma solo 2 legami: per questo passa molto raramente."],
+["T","Che cos'è un canale controllato da ligando?",["Un canale che si apre quando una molecola specifica si lega","Un canale sempre aperto","Un canale che si apre per il voltaggio","Un canale meccanico"],"Il ligando regola solo l'apertura, non passa attraverso il canale."],
+["T","Dove sono tipici i canali controllati meccanicamente?",["Negli organi di senso, ad esempio il tatto","Nei ribosomi","Nei lisosomi","Nella parete vegetale"],"Lo stiramento della membrana e del citoscheletro apre il canale."],
+["T","Da dove viene l'energia del trasporto attivo primario?",["Dall'idrolisi dell'ATP (rimozione dell'ultimo fosfato)","Dalla luce","Dal gradiente di un'altra molecola","Dal calore corporeo"],"Il trasporto attivo secondario invece sfrutta il gradiente di un'altra molecola."],
+["T","Che cosa fa la pompa sodio-potassio?",["Porta fuori 3 Na⁺ e dentro 2 K⁺, entrambi contro gradiente, consumando ATP","Porta dentro 3 Na⁺ e fuori 2 K⁺ senza energia","Porta fuori acqua","Porta dentro glucosio senza energia"],"Mantiene la differenza di concentrazione degli ioni."],
+["T","Come contribuiscono i trasportatori ABC alla resistenza ai farmaci?",["Pompano il farmaco fuori dalla cellula","Distruggono il DNA","Producono il farmaco","Bloccano i ribosomi"],"La cellula espelle il farmaco prima che agisca."],
+["T","Come si acidifica l'interno dei lisosomi?",["Con pompe protoniche (classe V) che portano H⁺ dentro, contro gradiente","Con l'osmosi","Con la fotosintesi","Con i ribosomi"],"Il pH scende a circa 5, contro circa 7–7,2 nel citosol."],
+["T","Che cosa fa l'ATP sintasi (F₀F₁)?",["Produce ATP usando il flusso di H⁺ che rientra nella matrice","Consuma ATP per pompare sodio","Trasporta acqua","Degrada proteine"],"Funziona come un rotore. Si trova sulla membrana mitocondriale interna."],
+["T","Che cosa caratterizza il trasporto attivo secondario?",["Usa il gradiente di una molecola per spostare un'altra contro gradiente","Usa direttamente l'ATP","Non usa proteine","Avviene solo nei batteri"],"Il gradiente di partenza è mantenuto da una pompa primaria."],
+["T","Come entra il glucosio nelle cellule intestinali?",["In simporto con il sodio, che entra secondo gradiente","Per diffusione semplice","Con le acquaporine","Per fagocitosi"],"Poi esce verso il sangue per diffusione facilitata."],
+["T","Come esce il glucosio dalle cellule intestinali verso il sangue?",["Per diffusione facilitata, secondo gradiente","Con la pompa sodio-potassio","Per osmosi","Contro gradiente con ATP"],"Il sodio entrato viene riportato fuori dalla pompa sodio-potassio."],
+["T","Che cosa fa lo scambiatore cloro-bicarbonato nei globuli rossi dei tessuti?",["Fa uscire bicarbonato e entrare cloro","Fa entrare bicarbonato e uscire cloro","Trasporta ossigeno","Produce ATP"],"Nei polmoni avviene il contrario."],
+// ===== PATOLOGIE =====
+["P","Quale proteina è mutata nella fibrosi cistica?",["CFTR, un trasportatore ABC del cloro","La pompa sodio-potassio","Un'acquaporina","L'ATP sintasi"],"La mutazione più comune è ΔF508."],
+["P","Che cos'è la mutazione ΔF508?",["Delezione della fenilalanina in posizione 508 del CFTR","Aggiunta di un mitocondrio","Mutazione dell'acquaporina","Mancanza di ribosomi"],"Rende il CFTR meno funzionante."],
+["P","Che cosa succede al muco nella fibrosi cistica?",["Si disidrata, diventa denso e favorisce le infezioni","Diventa troppo liquido","Scompare","Diventa acido come un lisosoma"],"Il cloro resta nelle cellule e l'acqua non viene richiamata nel lume."],
+["P","Nella fibrosi cistica, perché l'acqua non arriva nel lume dei bronchioli?",["Il cloro resta nelle cellule epiteliali e non richiama acqua per osmosi","Le acquaporine sono troppe","Il sodio esce troppo","Mancano i mitocondri"],"È un esempio diretto di osmosi e trasporto."],
+["P","Che cos'è la cistinuria?",["Malattia genetica rara del trasportatore di alcuni amminoacidi, tra cui la cistina","Un'infezione batterica","Una malattia dei mitocondri","Un difetto dei ribosomi"],"La cistina si accumula nell'urina."],
+["P","Quale conseguenza ha la cistinuria?",["Calcoli renali","Muco denso nei polmoni","Perdita di mitocondri","Pelle verde"],"I calcoli favoriscono infiammazione e infezioni urinarie."],
+["P","Che cos'è la cistina?",["Un dimero di due cisteine unite da un ponte disolfuro","Una proteina di membrana","Un organello","Un tipo di batterio"],"È l'amminoacido che si accumula nella cistinuria."],
+["P","Quale accorgimento dietetico riduce i calcoli nella cistinuria?",["Una dieta povera di proteine","Una dieta ricca di proteine","Bere meno acqua","Mangiare più zuccheri"],"Meno amminoacidi significa meno calcoli."]
+];
+
+const KEY="bio-quiz-v1";
+let state={sel:Object.keys(TOPICS),random:true,queue:[],pos:0,score:0,answered:0,wrong:[],opts:null,picked:null};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.queue))state=Object.assign(state,s)}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function build(onlyIdx){
+  let ids=onlyIdx||Q.map((_,i)=>i).filter(i=>state.sel.includes(Q[i][0]));
+  if(state.random)ids=shuffle(ids.slice());
+  Object.assign(state,{queue:ids,pos:0,score:0,answered:0,wrong:[],opts:null,picked:null});
+  save();render();
+}
+const $=id=>document.getElementById(id);
+function renderChips(){
+  const c=$("chips");c.innerHTML="";
+  const ex=document.createElement("button");ex.type="button";ex.className="chip star";ex.textContent="Solo temi d'esame";
+  ex.onclick=()=>{state.sel=Object.keys(TOPICS).filter(k=>TOPICS[k].star);renderChips();build()};
+  c.appendChild(ex);
+  for(const k in TOPICS){
+    const b=document.createElement("button");b.type="button";b.className="chip"+(TOPICS[k].star?" star":"");
+    const n=Q.filter(q=>q[0]===k).length;
+    b.textContent=TOPICS[k].name+" ("+n+")";b.setAttribute("aria-pressed",state.sel.includes(k));
+    b.onclick=()=>{state.sel=state.sel.includes(k)?state.sel.filter(x=>x!==k):[...state.sel,k];if(!state.sel.length)state.sel=[k];renderChips();build()};
+    c.appendChild(b);
+  }
+  $("order").setAttribute("aria-pressed",state.random);
+}
+function render(){
+  const total=state.queue.length;
+  $("bar").style.width=(total?state.answered/total*100:0)+"%";
+  const pct=state.answered?Math.round(state.score/state.answered*100):0;
+  $("stats").innerHTML=`<span>Domanda <b>${Math.min(state.pos+1,total)}</b>/${total}</span><span>Corrette <b>${state.score}</b></span><span>Sbagliate <b>${state.wrong.length}</b></span><span>Precisione <b>${pct}%</b></span>`;
+  $("retry").disabled=!state.wrong.length;
+  const card=$("card");
+  if(state.pos>=total){
+    card.innerHTML=`<div class="done"><span class="label">Risultato</span><div class="big">${state.score}/${total}</div><p>${state.wrong.length?"Hai sbagliato "+state.wrong.length+" domande: ripassale con il pulsante qui sotto.":"Nessun errore."}</p><div class="row"><button class="btn" id="d1" type="button">${state.wrong.length?"Ripassa gli errori":"Ricomincia"}</button></div></div>`;
+    $("d1").onclick=()=>state.wrong.length?build(state.wrong.slice()):build();
+    return;
+  }
+  const qi=state.queue[state.pos],[t,text,opts,expl]=Q[qi];
+  if(!state.opts)state.opts=shuffle([0,1,2,3]);
+  const star=TOPICS[t].star;
+  card.innerHTML=`<div class="qhead"><span class="tag${star?" star":""}">${star?"★ ":""}${TOPICS[t].name}</span><span class="label">#${qi+1}</span></div><h2 class="q">${text}</h2><div class="opts" id="opts"></div><div id="after"></div>`;
+  const box=$("opts");
+  state.opts.forEach((oi,n)=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";b.id="opt"+n;
+    b.innerHTML=`<span class="k">${n+1}</span><span>${opts[oi]}</span>`;
+    b.onclick=()=>answer(n);box.appendChild(b);
+  });
+  if(state.picked!==null)showResult();
+}
+function answer(n){
+  if(state.picked!==null)return;
+  state.picked=n;state.answered++;
+  if(state.opts[n]===0)state.score++;else state.wrong.push(state.queue[state.pos]);
+  save();render();
+}
+function showResult(){
+  const qi=state.queue[state.pos],[, ,opts,expl]=Q[qi];
+  const ok=state.opts[state.picked]===0;
+  state.opts.forEach((oi,n)=>{const b=$("opt"+n);b.disabled=true;if(oi===0)b.classList.add("right");else if(n===state.picked)b.classList.add("wrong")});
+  $("after").innerHTML=`<div class="expl${ok?"":" bad"}"><strong>${ok?"Giusto.":"Sbagliato. La risposta corretta è: "+opts[0]}</strong><p>${expl}</p></div><div class="row" style="margin-top:14px"><button class="btn" id="next" type="button">Avanti</button></div>`;
+  $("next").onclick=next;$("next").focus({preventScroll:true});
+}
+function next(){state.pos++;state.opts=null;state.picked=null;save();render()}
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  if(state.picked===null&&/^[1-4]$/.test(e.key)){const b=$("opt"+(e.key-1));if(b){e.preventDefault();answer(+e.key-1)}}
+  else if(state.picked!==null&&e.key==="Enter"&&document.activeElement.id!=="next"){e.preventDefault();next()}
+});
+$("order").onclick=()=>{state.random=!state.random;renderChips();build()};
+$("restart").onclick=()=>build();
+$("retry").onclick=()=>build(state.wrong.slice());
+load();renderChips();
+if(!state.queue.length)build();else render();
+</script>
+
+</body></html>
